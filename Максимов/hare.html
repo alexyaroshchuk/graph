@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>pathExample</title>
+    <meta charset='utf-8' />
+</head>
+
+<body>
+    <canvas id='example'>Обновите браузер</canvas>
+    <script>
+        var example = document.getElementById("example"),
+            ctx = example.getContext('2d');
+        example.height = 1000;
+        example.width = 1000;
+
+
+
+        function rotatePoint(point, pivotPoint, dec) {
+            var x = point.x;
+            point.x = pivotPoint.x +
+                (point.x - pivotPoint.x) * Math.cos(dec) -
+                (point.y - pivotPoint.y) * Math.sin(dec);
+            point.y = pivotPoint.y +
+                (point.y - pivotPoint.y) * Math.cos(dec) +
+                (x - pivotPoint.x) * Math.sin(dec);
+        }
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function drawBody() {
+            ctx.arc(150, 150, 50, 0, 2 * Math.PI, true);
+            ctx.stroke();
+            ctx.closePath();
+
+            drawLine(130, 130, 140, 130);
+
+            ctx.beginPath();
+            ctx.arc(170, 130, 7, 0, 2 * Math.PI, true);
+            ctx.stroke();
+        }
+
+        function drawEars() {
+
+            var p1 = {
+                x: 200,
+                y: 150
+            };
+            var p2 = {
+                x: 200,
+                y: 150
+            };
+            var pivotP = {
+                x: 150,
+                y: 150
+            };
+            rotatePoint(p1, pivotP, -Math.PI / 4.1);
+            rotatePoint(p2, pivotP, -Math.PI / 2.5);
+
+            ctx.moveTo(p1.x, p1.y);
+            ctx.bezierCurveTo(250, 1, 170, 25, p2.x, p2.y);
+            ctx.stroke();
+
+            p1 = {
+                x: 200,
+                y: 150
+            };
+            p2 = {
+                x: 200,
+                y: 150
+            };
+
+            rotatePoint(p1, pivotP, -Math.PI / 1.3);
+            rotatePoint(p2, pivotP, -Math.PI / 1.6);
+
+            ctx.moveTo(p1.x, p1.y);
+            ctx.bezierCurveTo(50, 25, 125, 1, p2.x, p2.y);
+            ctx.stroke();
+        }
+
+        function drawHand() {
+            var p1 = {
+                x: 200,
+                y: 150
+            };
+            var p2 = {
+                x: 200,
+                y: 150
+            };
+            var pivotP = {
+                x: 150,
+                y: 150
+            };
+            rotatePoint(p1, pivotP, Math.PI / 15);
+            rotatePoint(p2, pivotP, -Math.PI / 17);
+
+            ctx.moveTo(p1.x, p1.y);
+            ctx.bezierCurveTo(225, 170, 225, 130, p2.x, p2.y);
+            ctx.stroke();
+
+            p1 = {
+                x: 200,
+                y: 150
+            };
+            p2 = {
+                x: 200,
+                y: 150
+            };
+
+            rotatePoint(p1, pivotP, Math.PI / 1.08);
+            rotatePoint(p2, pivotP, -Math.PI / 1.08);
+
+            ctx.moveTo(p1.x, p1.y);
+            ctx.bezierCurveTo(75, 170, 75, 130, p2.x, p2.y);
+            ctx.stroke();
+        }
+
+        function drawFeed() {
+            var p1 = {
+                x: 200,
+                y: 150
+            };
+            var pivotP = {
+                x: 150,
+                y: 150
+            };
+            rotatePoint(p1, pivotP, Math.PI / 1.5);
+
+            ctx.moveTo(112, 220);
+            ctx.quadraticCurveTo(p1.x, p1.y - 24, 137, 220);
+            ctx.stroke();
+
+            drawLine(112, 220, 137, 220);
+
+            p1 = {
+                x: 200,
+                y: 150
+            };
+            rotatePoint(p1, pivotP, Math.PI / 3);
+
+            ctx.moveTo(162, 220);
+            ctx.quadraticCurveTo(p1.x, p1.y - 24, 187, 220);
+            ctx.stroke();
+
+            drawLine(162, 220, 187, 220);
+        }
+
+        drawBody();
+        drawEars();
+        drawHand();
+        drawFeed();
+    </script>
+</body>
+
+</html>

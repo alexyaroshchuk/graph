@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>Mandelbrot Fractal</title>
+</head>
+<body>
+	<canvas id="canvas" width="500" height="500"></canvas>
+
+	<script>
+		var cnv = document.getElementById("canvas");
+		var ctx = cnv.getContext("2d");
+
+		document.addEventListener('keypress', onKeyDown, false);
+
+		var width = cnv.width, height = cnv.height;
+
+		var imgData = ctx.getImageData(0, 0, width, height);
+		var pixelData = imgData.data;
+
+		var xmin, xmax, ymin, ymax;
+		var xstep, ystep;
+
+		reset();
+		calcSteps();
+		mandelbrotFractal();
+		updateCanvas();
+
+	function mandelbrotFractal() {
+		let z0Re = 0, z0Im = 0, z1Re = 0, z1Im = 0;
+		let maxIterations = 255;
+		let color = 0, r, g, b;
+
+		var x, y;
+		 for (let X = 0; X < width; X++) {
+			 for (let Y = 0; Y < height; Y++) {
+				x = fx(X); y = fy(Y);
+							  
+				z1Re = 0;
+				z1Im = 0;
+				
+				let i;
+				for (i = 0; i < maxIterations; i++) {
+					z0Re = z1Re; z0Im = z1Im;
+					z1Re = z0Re*z0Re - z0Im*z0Im + x;
+					z1Im = 2*z0Re*z0Im + y;
+					if (z1Re <= 2 && z1Im <= 2) {
+						color += 3;
+					}
+					else break;
+				}
+
+				let h, phi, v, rgbFromHsv;
+				
+				if (i < maxIterations) {
+					r = (color * 2) % 255;
+					g = (color * 4) % 255;
+					b = (color * 6) % 255;
+				}
+				else
+				{
+					v = Math.sqrt(z1Re*z1Re + z1Im*z1Im);
+					phi = Math.atan2(z1Im, z1Re);
+					if (phi < 0) phi = 2*Math.PI + phi;
+					h = phi / (2*Math.PI);
+					rgbFromHsv = hsvToRgb(h, 1, v);
+					r = rgbFromHsv[0];
+					g = rgbFromHsv[1];
+					b = rgbFromHsv[2];	
+				}
+
+				setPixel(X, Y, r, g, b);
+
+				color = 0;
+			}
+		 }
+	}
+
+	function reset() {
+		xmin = -1.5; xmax = 0.5; ymin = -1.2; ymax = 1.2;
+	}
+
+	function calcSteps() {
+		xstep = (xmax - xmin) / width;
+		ystep = (ymax - ymin) / height;
+	}
+
+	function fx(X) {
+		return xmin + X*xstep;
+	}
+	function fy(Y) {
+		return ymax - Y*ystep;
+	}
+
+	function setPixel(X, Y, r = 0, g = 0, b = 0) {
+		let index = (X + width*Y) * 4;
+		pixelData[index] = r;
+		pixelData[index+1] = g;
+		pixelData[index+2] = b;
+		pixelData[index+3] = 255;
+	}
+
+	function hsvToRgb(h, s, v) {
+		var r, g, b;
+
+		var i = Math.floor(h * 6);
+		var f = h * 6 - i;
+		var p = v * (1 - s);
+		var q = v * (1 - f * s);
+		var t = v * (1 - (1 - f) * s);
+
+		switch (i % 6) {
+			case 0: r = v, g = t, b = p; break;
+			case 1: r = q, g = v, b = p; break;
+			case 2: r = p, g = v, b = t; break;
+			case 3: r = p, g = q, b = v; break;
+			case 4: r = t, g = p, b = v; break;
+			case 5: r = v, g = p, b = q; break;
+		}
+
+		return [ r * 255, g * 255, b * 255 ];
+	}
+
+	function updateCanvas() {
+		ctx.putImageData(imgData, 0, 0);
+	}
+
+	function onKeyDown(e) {
+		switch(e.keyCode) {
+			case 43: // +
+				xmin += xstep*10;
+				xmax -= xstep*10;
+				ymin += ystep*10;
+				ymax -= ystep*10;
+				break;
+			case 45: // -
+				xmin -= xstep*10;
+				xmax += xstep*10;
+				ymin -= ystep*10;
+				ymax += ystep*10;
+				break;
+			case 97: // A
+				xmin -= xstep*10;
+				xmax -= xstep*10;
+				break;
+			case 100: // D
+				xmin += xstep*10;
+				xmax += xstep*10;
+				break;  
+			case 119: // W
+				ymin += ystep*10;
+				ymax += ystep*10;			
+				break;
+			case 115: // S
+				ymin -= ystep*10;
+				ymax -= ystep*10;
+				break;
+			case 114: // R
+				reset();
+		}
+
+		calcSteps();
+		mandelbrotFractal();
+		updateCanvas();
+	}
+	</script>
+</body>
+</html>

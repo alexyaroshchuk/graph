@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>rectExample</title>
+    <meta charset='utf-8' />
+    <script src="./functions.js"></script>
+
+    <link href='index.css' rel='stylesheet' type='text/css'>
+
+
+    <body>
+        <canvas id='example'>Обновите браузер</canvas>
+        <script>
+            var example = document.getElementById("example"),
+                ctx = example.getContext('2d');
+            example.width = 700;
+            example.height = 700;
+            var elemLeft = example.offsetLeft,
+                elemTop = example.offsetTop;
+
+            example.addEventListener('mousedown', mouseDownEvent, false);
+            example.addEventListener('mousemove', mouseMoveEvent, false);
+            example.addEventListener('mouseup', mouseUpEvent, false);
+            var timerId = setInterval(render, 10);
+        </script>
+
+
+        <p></p>
+        <input type="text" size="10" id="xFieldA" oninput='inputValue("xFieldA")' value="0">
+        <input type="text" size="10" id="yFieldA" oninput='inputValue("yFieldA")' value="0"> A
+        <p></p>
+        <input type="text" size="10" id="xFieldB" oninput='inputValue("xFieldB")' value="100">
+        <input type="text" size="10" id="yFieldB" oninput='inputValue("yFieldB")' value="100"> B
+        <p></p>
+        <input type="text" size="10" id="R" oninput='inputValue("R")' value = "10"> R
+    </body>
+</html>

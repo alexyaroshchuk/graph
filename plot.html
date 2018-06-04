@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+</head>
+<body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+
+    <script>
+        var cnv = document.getElementById("canvas");
+        var ctx = cnv.getContext("2d");
+
+        var width = cnv.width,
+            height = cnv.height;
+
+        var imgData = ctx.getImageData(1, 1, width, height);
+        var pixelData = imgData.data;
+
+        var Xmax = width, Ymax = height;
+        var xmax = 500, xmin = -xmax,
+            ymax = 500, ymin = -ymax;
+        var pixelsPerUnitX = width / (xmax - xmin),
+            pixelsPerUnitY = height / (ymax - ymin)
+        
+        let x, y, res, r, g;
+        for (let X = 0; X < Xmax; X++) {
+            for (let Y = 0; Y < Ymax; Y++) {
+               x = calcx(X);
+               y = calcy(Y);
+               res = f(x, y);
+               r = 0; g = 0; b = 0;
+               if (res < 0) r = res;
+               else g = res;
+               setPixel(X, Y, r, g, 0);
+             }
+         }
+        
+        ctx.putImageData(imgData, 1, 1);
+        
+
+    
+
+    function calcx(X) {
+        return xmin + X/pixelsPerUnitX;
+    }
+    function calcy(Y) {
+        return ymax - Y/pixelsPerUnitY;
+    }
+
+    function f(x, y) {
+        return (x*x+y*y-100*100) / 100;
+    }
+
+    function setPixel(X, Y, r = 0, g = 0, b = 0) {
+        pixelData[Y*Xmax*4 + X*4] = r;
+        pixelData[Y*Xmax*4 + X*4+1] = g;
+        pixelData[Y*Xmax * 4 + X*4+2] = b;
+        pixelData[Y*Xmax * 4 + X*4+3] = 255;
+    } 
+    </script>
+</body>
+</html>

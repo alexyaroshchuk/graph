@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>pathExample</title>
+    <meta charset='utf-8' />
+</head>
+
+<body>
+    <canvas id='example'>Обновите браузер</canvas>
+    <script>
+        var example = document.getElementById("example"),
+            ctx = example.getContext('2d');
+        example.height = 1000;
+        example.width = 1000;
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function drawNose() {
+            ctx.beginPath();
+            ctx.moveTo(100, 125);
+            ctx.lineTo(75, 125);
+            ctx.lineTo(125, 75);
+            ctx.lineTo(175, 125);
+            ctx.lineTo(150, 125);
+            ctx.stroke();
+        }
+
+        function drawTail() {
+            ctx.beginPath();
+            ctx.moveTo(100, 150);
+            ctx.lineTo(75, 175);
+            ctx.lineTo(175, 175);
+            ctx.lineTo(150, 150);
+            ctx.stroke();
+        }
+        ctx.lineWidth = 1;
+        ctx.strokeRect(100, 100, 50, 50); //25 - 1
+        drawNose();
+        drawTail();
+    </script>
+</body>
+
+</html>

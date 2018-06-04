@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Julia Set</title>
+</head>
+<body>
+<canvas id="juliaCanvas" width="1000" height="1000"></canvas>
+<script type="text/javascript">
+    var MINX = -1.5;
+    var MAXX = 1.5;
+    var MINY = -1.5;
+    var MAXY = 1.5;
+    var canvasSize = 600;
+    var width = canvasSize;
+    var height = canvasSize;
+    var jsX = 0.285;
+    var jsY = 0.01;
+    var maxIterations = 10000;
+    var canvas = document.getElementById("juliaCanvas");
+
+    canvas.width = 600;
+    canvas.height = 600;
+
+    canvas.addEventListener('mouseup', function (e) {
+        var x = e.pageX - e.target.offsetLeft,
+            y = e.pageY - e.target.offsetTop;
+
+        var rect = calcRect(x, y, 500);
+        var leftTopW = toWorldCoords(rect.leftTop.x, rect.leftTop.y);
+        var rightDownW = toWorldCoords(rect.rightDown.x, rect.rightDown.y);
+        MINX = leftTopW.x;
+        MAXY = leftTopW.y;
+        MAXX = rightDownW.x;
+        MINY = rightDownW.y;
+
+        context.fillStyle = "white";
+        context.clearRect(0, 0, 600, 600);
+        init();
+    });
+
+    function getColor(c) {
+        var r, g, b, p = c / 32,
+            l = ~~( p * 6 ), o = p * 6 - l, //~~ - это двойное побитовое "не"
+            q = 1 - o;
+        switch (l % 6) {
+            case 0:
+                r = 1;
+                g = o;
+                b = 0;
+                break;
+            case 1:
+                r = q;
+                g = 1;
+                b = 0;
+                break;
+            case 2:
+                r = 0;
+                g = 1;
+                b = o;
+                break;
+            case 3:
+                r = 0;
+                g = q;
+                b = 1;
+                break;
+            case 4:
+                r = o;
+                g = 0;
+                b = 1;
+                break;
+            case 5:
+                r = 1;
+                g = 0;
+                b = q;
+                break;
+        }
+        var c = "#" + ( "00" + ( ~~( r * 255 ) ).toString(16) ).slice(-2) +
+            ( "00" + ( ~~( g * 255 ) ).toString(16) ).slice(-2) +
+            ( "00" + ( ~~( b * 255 ) ).toString(16) ).slice(-2);
+        return hexToRgb(c);
+    }
+
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16),
+                a: 255
+            } : null;
+    }
+
+    function drawPixel(x, y, color) {
+        var pixel = context.getImageData(x, y, 1, 1);
+        var data = pixel.data;
+        data[0] = color.r;
+        data[1] = color.g;
+        data[2] = color.b;
+        data[3] = color.a;
+        context.putImageData(pixel, x, y);
+    }
+
+    function getMapCoeffs(x, t1, t2, s1, s2) {
+        var f = (x - t1) / (t2 - t1);
+        var g = f * (s2 - s1) + s1;
+        return g;
+    }
+
+function world_2_screen(x, y, left, top, width, height, xMax, yMax, xMin, yMin)
+{
+    var sx = left + width/(xMax - xMin)*(x - xMin);
+    var sy = top + height - height/(yMax - yMin)*(y - yMin);
+    return {x: sx, y: sy};
+}
+
+    function drawFractal(width, height, minX, maxX, minY, maxY, jsX, jsY) {
+        var a, as, za, b, bs, zb, count;
+        var color;
+        for (var j = minY; j < maxY; j+=0.004) {
+            for (var i = minX; i < maxX; i+=0.004) {
+                a = 0;//getMapCoeffs(i, 0, width, minX, maxX);
+                b = 0;//getMapCoeffs(j, 0, height, minY, maxY);
+                jsX = i;
+                jsY = j;
+                count = 0;
+                while (++count < maxIterations) {
+                    za = a * a;
+                    zb = b * b;
+                    if (za + zb > 4) break;
+                    as = za - zb;
+                    bs = 2 * a * b;
+                    a = as + jsX;
+                    b = bs + jsY;
+                }
+                if (count < maxIterations) {
+                    color = getColor(count);
+                }
+                else 
+                {
+                    color = {r:255, g:255, b:255, a:0};
+                }
+                var sC = world_2_screen(i, j, 0, 0, width, height, maxX, maxY, minX, minY);
+                drawPixel(sC.x, sC.y, color); //рисуем точку
+            }
+        }
+    }
+
+    function calcRect(xCenter, yCenter, side) {
+        var leftTop = {x: 0, y: 0};
+        leftTop.x = xCenter - side / 2;
+        leftTop.y = yCenter + side / 2;
+
+        var leftDown = {x: 0, y: 0};
+        leftDown.x = leftTop.x;
+        leftDown.y = yCenter - side / 2;
+
+        var rightDown = {x: 0, y: 0};
+        rightDown.x = xCenter + side / 2;
+        rightDown.y = leftDown.y;
+
+        var rightTop = {x: 0, y: 0};
+        rightTop.x = rightDown.x;
+        rightTop.y = leftTop.y;
+
+        return {leftTop: leftTop, leftDown: leftDown, rightDown: rightDown, rightTop: rightTop};
+    }
+
+    function toWorldCoords(x, y) {
+        var wx = (MAXX - MINX) * (x) / (width) + MINX;
+        var wy = (MAXY - MINY) * (y) / (height) + MINY;
+        return {x: wx, y: wy};
+    }
+
+    function init() {
+
+        context = canvas.getContext("2d");
+        drawFractal(width, height, MINX, MAXX, MINY, MAXY, jsX, jsY);
+    }
+    init();
+</script>
+</body>
+</html>

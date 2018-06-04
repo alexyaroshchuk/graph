@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>pathExample</title>
+    <meta charset='utf-8' />
+    <script src='complex.js'></script>
+    <script src='home.js'></script>
+</head>
+
+<body>
+    <canvas id='example'>Обновите браузер</canvas>
+    <script>
+        var example = document.getElementById("example"),
+            ctx = example.getContext('2d');
+        example.height = 1000;
+        example.width = 1000;
+
+        function drawLine(x1, y1, x2, y2) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        // var h = new home();
+        // h.square();
+        // h.translate(new Complex(250, 250));
+        // h.draw(drawLine);
+
+
+        var dot = new Complex(100, 100);
+        var coef = 1;
+        setInterval(function() {
+            dot = dot.mul(new Complex(0, coef / 10));
+            var x = dot.x + 500;
+            var y = dot.y + 500;
+            drawLine(500, 500, x, y);
+            coef++;
+        }, 1000);
+    </script>
+</body>
+
+</html>
